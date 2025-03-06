@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/*'
+  pull_request:
+
+jobs:
+  conditional_job:
+    if: ${{ github.event_name != 'pull_request' || github.base_ref == 'main' || startsWith(github.base_ref, 'release/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: echo "${{ github.event_name }} on branch ${{ github.base_ref }}"
+
+  dependent_job:
+    needs: conditional_job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run dependent job
+        run: echo "Dependent job"
